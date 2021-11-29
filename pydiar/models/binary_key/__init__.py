@@ -111,6 +111,9 @@ class BinaryKeyDiarizationModel(DiarizationModel):
         if kbm_window_shift > self.KBM_MAX_WINDOW_SHIFT:
             kbm_window_shift = self.KBM_MAX_WINDOW_SHIFT
 
+        elif kbm_window_shift == 0:
+            kbm_window_shift = 1
+
         kbm_window_count = np.floor(
             (len(masked_features) - self.KBM_WINDOW_LENGTH) / kbm_window_shift
         )
