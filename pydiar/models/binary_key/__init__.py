@@ -26,33 +26,37 @@ class BinaryKeyDiarizationModel(DiarizationModel):
     This implementation is heavily based on https://github.com/josepatino/pyBK
     """
 
-    FRAMELENGTH = 0.025
-    FRAMESHIFT = 0.01
-    NFILTERS = 30
-    NCOEFF = 30
+    def __init__(self):
+        self.__init_parameters()
 
-    SEGMENT_LENGTH = 100
-    SEGMENT_SHIFT = 100
-    SEGMENT_OVERLAP = 100
+    def __init_parameters(self):
+        self.FRAMELENGTH = 0.025
+        self.FRAMESHIFT = 0.01
+        self.NFILTERS = 30
+        self.NCOEFF = 30
 
-    KBM_MAX_WINDOW_SHIFT = 50
-    KBM_WINDOW_LENGTH = 200
-    KBM_MIN_GAUSSIANS = 1024
+        self.SEGMENT_LENGTH = 100
+        self.SEGMENT_SHIFT = 100
+        self.SEGMENT_OVERLAP = 100
 
-    KBM_SIZE_REL = 0.1
+        self.KBM_MAX_WINDOW_SHIFT = 50
+        self.KBM_WINDOW_LENGTH = 200
+        self.KBM_MIN_GAUSSIANS = 1024
 
-    TOP_GAUSSIANS_PER_FRAME = 5
+        self.KBM_SIZE_REL = 0.1
 
-    INITIAL_CLUSTERS = 16
-    BK_ONE_PERCENTAGE = 0.2
+        self.TOP_GAUSSIANS_PER_FRAME = 5
 
-    CLUSTERING_METRIC = "cosine"
-    CLUSTERING_SELECTION_METRIC = "cosine"
-    CLUSTERING_SELECTION_MAX_SPEAKERS = 16
+        self.INITIAL_CLUSTERS = 16
+        self.BK_ONE_PERCENTAGE = 0.2
 
-    RESEGMENTATION_MODEL_SIZE = 6
-    RESEGMENTATION_NB_ITER = 10
-    RESEGMENTATION_SMOOTH_WIN = 100
+        self.CLUSTERING_METRIC = "cosine"
+        self.CLUSTERING_SELECTION_METRIC = "cosine"
+        self.CLUSTERING_SELECTION_MAX_SPEAKERS = 16
+
+        self.RESEGMENTATION_MODEL_SIZE = 6
+        self.RESEGMENTATION_NB_ITER = 10
+        self.RESEGMENTATION_SMOOTH_WIN = 100
 
     def _extract_features(self, sample_rate, signal):
         """
