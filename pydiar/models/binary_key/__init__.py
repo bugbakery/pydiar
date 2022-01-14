@@ -260,7 +260,7 @@ class BinaryKeyDiarizationModel(DiarizationModel):
         segments = getSegments(
             self.FRAMESHIFT,
             segment_table,
-            np.squeeze(best_clustering),
+            np.squeeze(best_clustering, 1),
         )
 
         # TODO: Move this conversion to getSegments

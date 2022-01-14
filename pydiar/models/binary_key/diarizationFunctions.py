@@ -207,7 +207,9 @@ def binarizeFeatures(binaryKeySize, topComponentIndicesMatrix, bitsPerSegmentFac
     # Fill BK
     binaryKey[0, np.argsort(-v_f)[0][0 : int(numberOfElementsBinaryKey)]] = 1
     # CV normalization
-    v_f = v_f / np.sum(v_f)
+    vf_sum = np.sum(v_f)
+    if vf_sum != 0:
+        v_f = v_f / vf_sum
     return binaryKey, v_f
 
 
@@ -426,9 +428,12 @@ def getBestClustering(
     allCoord = allCoord[
         np.arange(np.where(allCoord[:, 1] == np.min(allCoord[:, 1]))[0], nPoints), :
     ]
-    nPoints = np.size(allCoord, 0)
     lineVec = allCoord[-1, :] - firstPoint
-    lineVecN = lineVec / np.sqrt(np.sum(np.square(lineVec)))
+    rssLineVec = np.sqrt(np.sum(np.square(lineVec)))
+    if rssLineVec != 0:
+        lineVecN = lineVec / rssLineVec
+    else:
+        lineVecN = lineVec
     vecFromFirst = np.subtract(allCoord, firstPoint)
     scalarProduct = vecFromFirst * lineVecN
     scalarProduct = scalarProduct[:, 0] + scalarProduct[:, 1]
@@ -550,28 +555,30 @@ def performResegmentation(
         finalClusteringTableResegmentation = np.vstack(
             (finalClusteringTableResegmentation, segOut[(changes[i]).astype(int)])
         )
-        currentPoint = changes[i] + 1
+        currentPoint = (changes[i] + 1).astype(int)
     addedRow = np.hstack(
         (
-            np.tile(np.where(speechMapping == currentPoint)[0], (1, 2)),
+            np.tile(np.where(speechMapping == np.maximum(currentPoint, 1))[0], (1, 2)),
             np.tile(np.where(speechMapping == numberOfSpeechFeatures)[0], (1, 2)),
         )
     )
+
     finalSegmentTable = np.vstack((finalSegmentTable, addedRow[0]))
     finalClusteringTableResegmentation = np.vstack(
-        (finalClusteringTableResegmentation, segOut[(changes[i] + 1).astype(int)])
+        (finalClusteringTableResegmentation, segOut[currentPoint])
     )
+
     return finalClusteringTableResegmentation, finalSegmentTable
 
 
 def getSegments(frameshift, finalSegmentTable, finalClusteringTable):
     numberOfSpeechFeatures = finalSegmentTable[-1, 2].astype(int) + 1
     solutionVector = np.zeros([1, numberOfSpeechFeatures])
-    for i in np.arange(np.size(finalSegmentTable, 0)):
+    for segmentRow, clusterRow in zip(finalSegmentTable, finalClusteringTable):
         solutionVector[
             0,
-            np.arange(finalSegmentTable[i, 1], finalSegmentTable[i, 2] + 1).astype(int),
-        ] = finalClusteringTable[i]
+            np.arange(segmentRow[1], segmentRow[2] + 1).astype(int),
+        ] = clusterRow
     seg = np.empty([0, 3])
     solutionDiff = np.diff(solutionVector)[0]
     first = 0
