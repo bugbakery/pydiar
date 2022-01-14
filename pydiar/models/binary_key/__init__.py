@@ -1,4 +1,5 @@
 import logging
+import warnings
 from typing import List
 
 import numpy as np
@@ -226,6 +227,12 @@ class BinaryKeyDiarizationModel(DiarizationModel):
             feature_count,
             speech_mask,
         ) = self._preprocessing(sample_rate, signal)
+
+        if len(masked_features) == 0:
+            warnings.warn(
+                "No speech detected, returning empty segment list", RuntimeWarning
+            )
+            return []
 
         speech_mapping = np.zeros(feature_count)
         # you need to start the mapping from 1 and end it in the actual feature count
