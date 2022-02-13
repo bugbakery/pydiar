@@ -178,7 +178,7 @@ class BinaryKeyDiarizationModel(DiarizationModel):
             k,
             self.CLUSTERING_SELECTION_MAX_SPEAKERS,
         ).astype(int)
-        best_clustering = finalClusteringTable[:, bestClusteringID - 1]
+        best_clustering = finalClusteringTable[:, bestClusteringID]
         logging.info(
             f"Best: {bestClusteringID} with "
             f"{np.size(np.unique(best_clustering), 0)} clusters"

@@ -443,13 +443,15 @@ def getBestClustering(
     vecToLine = vecFromFirst - vecFromFirstParallel
     distToLine = np.sqrt(np.sum(np.square(vecToLine), axis=1))
     bestClusteringID = allCoord[np.argmax(distToLine)][0]
-
+    print(allCoord, distToLine, bestClusteringID)
     # Select best clustering that matches max speaker limit
     nrSpeakersPerSolution = np.zeros((clusteringTable.shape[1]))
     for k in np.arange(clusteringTable.shape[1]):
         nrSpeakersPerSolution[k] = np.size(np.unique(clusteringTable[:, k]))
 
     firstAllowedClustering = np.min(np.where(nrSpeakersPerSolution <= maxNrSpeakers))
+    print(f"{nrSpeakersPerSolution=}")
+    print(f"{firstAllowedClustering=}")
     # Note: clusters are ordered from most clusters to least, so this selects the bestClusteringID
     # unless it has more than maxNrSpeakers nodes, in which case it selects firstAllowedClustering
     bestClusteringID = np.maximum(
