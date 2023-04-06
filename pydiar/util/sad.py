@@ -111,7 +111,7 @@ def get_py_webrtcvad_segments(vad_info, fs):
     sad_info = np.column_stack((starts[1], ends[1]))
     vad_index = vad_index[0]
 
-    segments = np.zeros_like(sad_info, dtype=np.float)
+    segments = np.zeros_like(sad_info, dtype=float)
     for i in range(sad_info.shape[0]):
         segments[i][0] = float(vad_index[sad_info[i][0]]) / fs
         segments[i][1] = float(vad_index[sad_info[i][1]] + 1) / fs
