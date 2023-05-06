@@ -23,7 +23,7 @@ from pydub import AudioSegment
 INPUT_FILE = "test.wav"
 
 sample_rate = 32000
-audio = AudioSegment.from_wav("test.wav")
+audio = AudioSegment.from_wav(INPUT_FILE)
 audio = audio.set_frame_rate(sample_rate)
 audio = audio.set_channels(1)
 
