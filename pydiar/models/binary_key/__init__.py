@@ -27,37 +27,67 @@ class BinaryKeyDiarizationModel(DiarizationModel):
     This implementation is heavily based on https://github.com/josepatino/pyBK
     """
 
-    def __init__(self):
-        self.__init_parameters()
+    def __init__(
+        self,
+        framelength=0.025,
+        frameshift=0.01,
+        nfilters=30,
+        ncoeff=30,
+        segment_length=100,
+        segment_shift=100,
+        segment_overlap=100,
+        kbm_max_window_shift=50,
+        kbm_window_length=200,
+        kbm_min_gaussians=1024,
+        kbm_size_rel=0.1,
+        top_gaussians_per_frame=5,
+        initial_clusters=16,
+        bk_one_percentage=0.2,
+        clustering_metric="cosine",
+        clustering_selection_metric="cosine",
+        clustering_selection_max_speakers=16,
+        resegmentation_model_size=6,
+        resegmentation_nb_iter=10,
+        resegmentation_smooth_win=100,
+    ):
+        self.FRAMELENGTH = framelength
+        self.FRAMESHIFT = frameshift
+        self.NFILTERS = nfilters
+        self.NCOEFF = ncoeff
 
-    def __init_parameters(self):
-        self.FRAMELENGTH = 0.025
-        self.FRAMESHIFT = 0.01
-        self.NFILTERS = 30
-        self.NCOEFF = 30
+        self.SEGMENT_LENGTH = segment_length
+        self.SEGMENT_SHIFT = segment_shift
+        self.SEGMENT_OVERLAP = segment_overlap
 
-        self.SEGMENT_LENGTH = 100
-        self.SEGMENT_SHIFT = 100
-        self.SEGMENT_OVERLAP = 100
+        self.KBM_MAX_WINDOW_SHIFT = kbm_max_window_shift
+        self.KBM_WINDOW_LENGTH = kbm_window_length
+        self.KBM_MIN_GAUSSIANS = kbm_min_gaussians
 
-        self.KBM_MAX_WINDOW_SHIFT = 50
-        self.KBM_WINDOW_LENGTH = 200
-        self.KBM_MIN_GAUSSIANS = 1024
+        self.KBM_SIZE_REL = kbm_size_rel
 
-        self.KBM_SIZE_REL = 0.1
+        self.TOP_GAUSSIANS_PER_FRAME = top_gaussians_per_frame
 
-        self.TOP_GAUSSIANS_PER_FRAME = 5
+        self.INITIAL_CLUSTERS = initial_clusters
+        self.BK_ONE_PERCENTAGE = bk_one_percentage
 
-        self.INITIAL_CLUSTERS = 16
-        self.BK_ONE_PERCENTAGE = 0.2
+        if clustering_metric != "cosine":
+            raise ValueError(
+                "Only `cosine` distance is supported for clustering metric."
+            )
 
-        self.CLUSTERING_METRIC = "cosine"
+        self.CLUSTERING_METRIC = clustering_metric
+
+        if clustering_selection_metric != "cosine":
+            raise ValueError(
+                "Only `cosine` distance is supported for clustering selection metric."
+            )
+
         self.CLUSTERING_SELECTION_METRIC = "cosine"
-        self.CLUSTERING_SELECTION_MAX_SPEAKERS = 16
+        self.CLUSTERING_SELECTION_MAX_SPEAKERS = clustering_selection_max_speakers
 
-        self.RESEGMENTATION_MODEL_SIZE = 6
-        self.RESEGMENTATION_NB_ITER = 10
-        self.RESEGMENTATION_SMOOTH_WIN = 100
+        self.RESEGMENTATION_MODEL_SIZE = resegmentation_model_size
+        self.RESEGMENTATION_NB_ITER = resegmentation_nb_iter
+        self.RESEGMENTATION_SMOOTH_WIN = resegmentation_smooth_win
 
     def _extract_features(self, sample_rate, signal):
         """
@@ -167,7 +197,6 @@ class BinaryKeyDiarizationModel(DiarizationModel):
             initialClustering,
             self.CLUSTERING_METRIC,
         )
-
         logging.info("Finding best clustering")
 
         bestClusteringID = getBestClustering(
@@ -178,7 +207,9 @@ class BinaryKeyDiarizationModel(DiarizationModel):
             k,
             self.CLUSTERING_SELECTION_MAX_SPEAKERS,
         ).astype(int)
+
         best_clustering = finalClusteringTable[:, bestClusteringID]
+
         logging.info(
             f"Best: {bestClusteringID} with "
             f"{np.size(np.unique(best_clustering), 0)} clusters"

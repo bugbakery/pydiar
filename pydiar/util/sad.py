@@ -8,7 +8,6 @@ from numpy.lib.stride_tricks import as_strided
 
 
 def py_webrtcvad(data, fs, fs_vad, hoplength=30, vad_mode=0):
-
     # from librosa.core import resample
     # from librosa.util import frame
     """Voice activity detection.
@@ -55,7 +54,7 @@ def py_webrtcvad(data, fs, fs_vad, hoplength=30, vad_mode=0):
 
     # check data
     if data.dtype.kind == "i":
-        if data.max() > 2 ** 15 - 1 or data.min() < -(2 ** 15):
+        if data.max() > 2**15 - 1 or data.min() < -(2**15):
             raise ValueError(
                 "when data type is int, data must be -32768 < data < 32767."
             )
@@ -65,7 +64,7 @@ def py_webrtcvad(data, fs, fs_vad, hoplength=30, vad_mode=0):
         if np.abs(data).max() >= 1:
             data = data / np.abs(data).max() * 0.9
             warnings.warn("input data was rescaled.")
-        data = (data * 2 ** 15).astype("f")
+        data = (data * 2**15).astype("f")
     else:
         raise ValueError("data dtype must be int or float.")
 
