@@ -251,6 +251,7 @@ def performClustering(
     ####### highest similarity, creating a new signature for the resulting
     ####### cluster
     ####### 4. Back to 1 if #clusters > 1
+
     for k in range(N_init):
         ####### 1. Data reassignment. Calculate the similarity between the current segment with all clusters and assign it to the one which maximizes
         ####### the similarity. Finally re-calculate binaryKeys for all cluster
@@ -299,15 +300,6 @@ def performClustering(
         location = np.nanargmax(clusterSimilarityMatrix)
         R, C = np.unravel_index(location, (N_init, N_init))
         ### Then we merge clusters R and C
-        # logging.info('Merging clusters',R+1,'and',C+1,'with a similarity score of',np.around(value,decimals=4))
-        logging.info(
-            "Merging clusters",
-            "%3s" % str(R + 1),
-            "and",
-            "%3s" % str(C + 1),
-            "with a similarity score of",
-            np.around(value, decimals=4),
-        )
         activeClusters[0, C] = 0
         ### 3. Save the resulting clustering and go back to 1 if the number of clusters >1
         mergingClusteringIndices = np.where(clusteringTable[:, k] == C + 1)
@@ -386,7 +378,6 @@ def binaryKeySimilarity_cdist(clusteringMetric, bkT1, cvT1, bkT2, cvT2):
 def getBestClustering(
     bestClusteringMetric, bkT, cvT, clusteringTable, n, maxNrSpeakers
 ):
-
     wss = np.zeros([1, n])
     overallMean = np.mean(cvT, 0)
     if bestClusteringMetric == "cosine":
@@ -443,15 +434,12 @@ def getBestClustering(
     vecToLine = vecFromFirst - vecFromFirstParallel
     distToLine = np.sqrt(np.sum(np.square(vecToLine), axis=1))
     bestClusteringID = allCoord[np.argmax(distToLine)][0]
-    print(allCoord, distToLine, bestClusteringID)
     # Select best clustering that matches max speaker limit
     nrSpeakersPerSolution = np.zeros((clusteringTable.shape[1]))
     for k in np.arange(clusteringTable.shape[1]):
         nrSpeakersPerSolution[k] = np.size(np.unique(clusteringTable[:, k]))
 
     firstAllowedClustering = np.min(np.where(nrSpeakersPerSolution <= maxNrSpeakers))
-    print(f"{nrSpeakersPerSolution=}")
-    print(f"{firstAllowedClustering=}")
     # Note: clusters are ordered from most clusters to least, so this selects the bestClusteringID
     # unless it has more than maxNrSpeakers nodes, in which case it selects firstAllowedClustering
     bestClusteringID = np.maximum(
@@ -472,7 +460,6 @@ def performResegmentation(
     smoothWin,
     numberOfSpeechFeatures,
 ):
-
     np.random.seed(0)
 
     changePoints, segBeg, segEnd, nSegs = unravelMask(mask)
